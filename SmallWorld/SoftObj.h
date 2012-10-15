@@ -8,6 +8,7 @@ namespace swd{
 	public:
 		SoftObj(void);
 		~SoftObj(void);
+		virtual void addForce(AppliedForce force){}
 	private:
 		double elasticity;
 	};

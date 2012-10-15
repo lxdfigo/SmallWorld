@@ -8,5 +8,7 @@ namespace swd{
 	public:
 		StaticObj(void);
 		~StaticObj(void);
+
+		virtual void addForce(AppliedForce force){}
 	};
 }

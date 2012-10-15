@@ -171,6 +171,30 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath=".\Enviroment.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Enviroment.h"
+				>
+			</File>
+			<File
+				RelativePath=".\ObjectTree.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\ObjectTree.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Time.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Time.h"
+				>
+			</File>
+			<File
 				RelativePath=".\World.cpp"
 				>
 			</File>
@@ -185,19 +209,15 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath=".\Controller.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\Controller.h"
-				>
-			</File>
-			<File
 				RelativePath=".\Script.cpp"
 				>
 			</File>
 			<File
 				RelativePath=".\Script.h"
+				>
+			</File>
+			<File
+				RelativePath=".\SmallWorld.h"
 				>
 			</File>
 		</Filter>
@@ -242,6 +262,70 @@
 			</File>
 			<File
 				RelativePath=".\StaticObj.h"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="Physics"
+			>
+			<File
+				RelativePath=".\Basic.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Body.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Body.h"
+				>
+			</File>
+			<File
+				RelativePath=".\HydroBody.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\HydroBody.h"
+				>
+			</File>
+			<File
+				RelativePath=".\PhyStr.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\PhyStr.h"
+				>
+			</File>
+			<File
+				RelativePath=".\RigidBody.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\RigidBody.h"
+				>
+			</File>
+			<File
+				RelativePath=".\SoftBody.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\SoftBody.h"
+				>
+			</File>
+			<File
+				RelativePath=".\StaticBody.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\StaticBody.h"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="Samples"
+			>
+			<File
+				RelativePath=".\Samples\main.cpp"
 				>
 			</File>
 		</Filter>
