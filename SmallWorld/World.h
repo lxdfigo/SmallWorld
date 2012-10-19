@@ -1,23 +1,34 @@
 #pragma once
-#include "ObjectTree.h"
+#include "EntityTree.h"
 #include "Enviroment.h"
-#include "Time.h"
+#include "Timer.h"
+#include <map>
 
 namespace swd{
+	struct WorldConfig{
+		EnvConfig envCfg;
+		TimeConfig tmCfg;
+	};
 	class SmallWorld
 	{
 	public:
-		SmallWorld(void);
-		~SmallWorld(void);
+		SmallWorld(SWID id):wID(id){}
+		~SmallWorld(void){}
 
-		void advance();
-		bool registe(Object *obj);
+		void init(WorldConfig config);
+		void update();
+		bool registe(Entity *obj);
+		Entity *getEntity(SWID oid);
 	private:
-		Time time;
-		ObjectTree objectTree;
+		SWID	wID;
+		Timer timer;
+		EntityTree entityTree;
 		Enviroment enviroment;
 
+		void advance();
 		void updateEnviroment();
-		void updateObjects();
+		void updateEntitys();
 	};
+
+	typedef std::map<SWID,SmallWorld*> SmallWorlds;
 }

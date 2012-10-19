@@ -21,4 +21,13 @@ typedef CMatrix<float,4> Mat4x4f;
 typedef CMatrix<double,3> Mat3x3d;
 typedef CMatrix<double,4> Mat4x4d;
 
+class Transform{
+	Mat4x4d mat;
+public:
+	Transform(Vec2d vec){}
+	Vec2d& trans(Vec2d&  vec){return vec;}
+
+	Transform(Vec3d vec){}
+	Vec3d& trans(Vec3d&  vec){return vec;}
+};
 #endif

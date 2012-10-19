@@ -18,9 +18,9 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
+			OutputDirectory="../lib"
 			IntermediateDirectory="$(ConfigurationName)"
-			ConfigurationType="1"
+			ConfigurationType="4"
 			CharacterSet="1"
 			>
 			<Tool
@@ -59,17 +59,10 @@
 				Name="VCPreLinkEventTool"
 			/>
 			<Tool
-				Name="VCLinkerTool"
-				LinkIncremental="2"
-				GenerateDebugInformation="true"
-				SubSystem="1"
-				TargetMachine="1"
+				Name="VCLibrarianTool"
 			/>
 			<Tool
 				Name="VCALinkTool"
-			/>
-			<Tool
-				Name="VCManifestTool"
 			/>
 			<Tool
 				Name="VCXDCMakeTool"
@@ -79,9 +72,6 @@
 			/>
 			<Tool
 				Name="VCFxCopTool"
-			/>
-			<Tool
-				Name="VCAppVerifierTool"
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
@@ -171,6 +161,14 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath=".\EntityTree.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\EntityTree.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Enviroment.cpp"
 				>
 			</File>
@@ -179,19 +177,19 @@
 				>
 			</File>
 			<File
-				RelativePath=".\ObjectTree.cpp"
+				RelativePath=".\Funcs.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\ObjectTree.h"
+				RelativePath=".\Funcs.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Time.cpp"
+				RelativePath=".\Timer.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\Time.h"
+				RelativePath=".\Timer.h"
 				>
 			</File>
 			<File
@@ -209,6 +207,14 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
+				RelativePath=".\Job.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Job.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Script.cpp"
 				>
 			</File>
@@ -220,48 +226,56 @@
 				RelativePath=".\SmallWorld.h"
 				>
 			</File>
+			<File
+				RelativePath=".\ThreadPool.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\ThreadPool.h"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Objects"
 			>
 			<File
-				RelativePath=".\HydroObj.cpp"
+				RelativePath=".\Entity.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\HydroObj.h"
+				RelativePath=".\Entity.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Object.cpp"
+				RelativePath=".\HydroEntity.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\Object.h"
+				RelativePath=".\HydroEntity.h"
 				>
 			</File>
 			<File
-				RelativePath=".\RigidObj.cpp"
+				RelativePath=".\RigidEntity.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\RigidObj.h"
+				RelativePath=".\RigidEntity.h"
 				>
 			</File>
 			<File
-				RelativePath=".\SoftObj.cpp"
+				RelativePath=".\SoftEntity.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\SoftObj.h"
+				RelativePath=".\SoftEntity.h"
 				>
 			</File>
 			<File
-				RelativePath=".\StaticObj.cpp"
+				RelativePath=".\StaticEntity.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\StaticObj.h"
+				RelativePath=".\StaticEntity.h"
 				>
 			</File>
 		</Filter>
@@ -273,59 +287,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Body.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\Body.h"
-				>
-			</File>
-			<File
-				RelativePath=".\HydroBody.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\HydroBody.h"
-				>
-			</File>
-			<File
 				RelativePath=".\PhyStr.cpp"
 				>
 			</File>
 			<File
 				RelativePath=".\PhyStr.h"
-				>
-			</File>
-			<File
-				RelativePath=".\RigidBody.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\RigidBody.h"
-				>
-			</File>
-			<File
-				RelativePath=".\SoftBody.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\SoftBody.h"
-				>
-			</File>
-			<File
-				RelativePath=".\StaticBody.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\StaticBody.h"
-				>
-			</File>
-		</Filter>
-		<Filter
-			Name="Samples"
-			>
-			<File
-				RelativePath=".\Samples\main.cpp"
 				>
 			</File>
 		</Filter>

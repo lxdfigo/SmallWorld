@@ -1,14 +1,19 @@
 #pragma once
-#include "Object.h"
+#include "Entity.h"
 
 namespace swd{
+	struct EnvConfig{
+		VecPos gravity;
+		VecPos wind;
+	};
 	class Enviroment
 	{
 	public:
 		Enviroment(void);
 		~Enviroment(void);
 
-		void update(Object *obj);
+		void init(EnvConfig config);
+		void update(Entity *obj);
 	private:
 		AppliedForce gravity;
 		AppliedForce wind;
