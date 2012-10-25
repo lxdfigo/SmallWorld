@@ -7,11 +7,11 @@ public:
 	WinPaint(void);
 	~WinPaint(void);
 
-	RECT getRect(Role *b);
-	void add(Role* r){role = r;}
-	void addhouse(Role* h){house = h;}
+	RECT getRect(AABB aabb);
+	void add(Role* r){roles.push_back(r);}
+	void addHouse(House* r){houses.push_back(r);}
 	void paint(HDC hdc);
 private:
-	Role *role;
-	Role *house;
+	std::vector<Role *>roles;
+	std::vector<House *>houses;
 };

@@ -287,11 +287,35 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Body.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Body.h"
+				>
+			</File>
+			<File
+				RelativePath=".\BoxBody.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\BoxBody.h"
+				>
+			</File>
+			<File
 				RelativePath=".\PhyStr.cpp"
 				>
 			</File>
 			<File
 				RelativePath=".\PhyStr.h"
+				>
+			</File>
+			<File
+				RelativePath=".\PolyBody.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\PolyBody.h"
 				>
 			</File>
 		</Filter>

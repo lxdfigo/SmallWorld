@@ -1,48 +1,48 @@
 #pragma once
-#include "Entity.h"
-#include "Timer.h"
-#include "PhyStr.h"
+#include "Body.h"
 
 namespace swd{
 	class Entity
 	{
 	public:
-		Entity(SWID id = ""):simMask(NOMASK),oID(id){}
-		~Entity(void){}
-
-		virtual void addForce(AppliedForce force) = 0;
-		virtual void advance(Timer &timer) = 0;
-
-		virtual void solveCollision(Collision *col) = 0;
+		Entity(SWID id = ""):simMask(NOMASK),oID(id),body(NULL){}
+		virtual ~Entity(void){
+			if (body != NULL) delete body;
+		}
+		virtual void solveCollision(Entity*obj,Collision *col) = 0;
 		virtual void callbackCollision(Collision *col) = 0;
 		virtual void updateCollision(Collision *col) = 0;
-		virtual AABB getAABB() = 0;
-		virtual void transform(Transform& mv) = 0;
-
-		virtual bool isCollided(Entity*obj,Collision *col) = 0;
-		virtual bool checkRigidEntityCollided(Entity*obj,Collision *col) = 0;
-		virtual bool checkStaticEntityCollided(Entity*obj,Collision *col) = 0;
-		virtual bool checkSoftEntityCollided(Entity*obj,Collision *col) = 0;
-		virtual bool checkHydroEntityCollided(Entity*obj,Collision *col) = 0;
 
 		virtual bool solve(Entity *obj, Collision * col){
-			if (isCollided(obj,col)){
-				solveCollision(col);
+			if (body->isCross(obj->getBody(),col)){
+				solveCollision(obj,col);
 				return true;
 			}
 			return false;
 		}
-		virtual bool checkCollision(Collision *col){
+		virtual bool collided(Collision *col){
 			updateCollision(col);
 			callbackCollision(col);
 			return true;
 		}
-		bool isMask(int mask){ return (mask & simMask) != NOMASK;} 
-		void setMask(int mask){simMask |= mask;}
-		SWID getID(){return oID;}
+		virtual bool operator != (Entity& entity) const{
+			return oID.compare(entity.getID()) != 0;
+		}
+		virtual void advance(Timer &timer){
+			body->advance(timer);
+		}
+
+		virtual void  transform(Transform& trans){body->transform(trans);}
+		virtual void  addForce(AppliedForce force) { body->addForce(force);}
+		virtual bool  isMask(int mask){ return (mask & simMask) != NOMASK;} 
+		virtual void  setMask(int mask){simMask |= mask;}
+		virtual SWID  getID(){return oID;}
+		virtual Body* getBody(){return body;}
+		virtual AABB  getAABB(){return body->getAABB();}
 	protected:
 		SWID oID;
 		int simMask;
+		Body *body;
 	};
 
 }

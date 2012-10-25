@@ -6,3 +6,4 @@
 #include "SoftEntity.h"
 #include "HydroEntity.h"
 #include "funcs.h"
+#include "StaticEntity.h"

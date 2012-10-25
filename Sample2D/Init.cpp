@@ -6,45 +6,32 @@
 SmallWorld *world;
 WinPaint winPaint;
 void InitWorld(){
-	RPolygon poly;
-	VecPos p = VecPos(2);
-	poly.add(p);
-	p.Elements[0] = 3;
-	p.Elements[1] = 2;
-	poly.add(p);
-	p.Elements[0] = 3;
-	p.Elements[1] = 3;
-	poly.add(p);
-	p.Elements[0] = 2;
-	p.Elements[1] = 3;
-	poly.add(p);
-	Role *role = new Role("player",poly,1.0);
-	RPolygon poly2;
-	p.Elements[0] = 0;
-	p.Elements[1] = 3;
-	poly2.add(p);
-	p.Elements[0] = 6;
-	p.Elements[1] = 3;
-	poly2.add(p);
-	p.Elements[0] = 6;
-	p.Elements[1] = 4;
-	poly2.add(p);
-	p.Elements[0] = 0;
-	p.Elements[1] = 4;
-	poly2.add(p);
-	Role *house = new Role("house",poly2,1.0);
-	house->setMask(STATIC);
-	VecPos grav;
-	grav.Elements[1] = 9.8;
+	VecPos grav(0,9.8);
 	WorldConfig config;
 	config.envCfg.gravity = grav;
-	config.tmCfg.step = 0.1;
+	config.tmCfg.step = 1.0/FPS;
 	world = swCreateWorld("world");
 	swInitWorld("world",config);
-	swRegisteEntity("world",role);
+
+	Role *role;
+
+	//role = new Role("rock1",VecPos(2,0),VecPos(3,1),1.0);
+	//swRegisteEntity("world",role);
+	//winPaint.add(role);
+
+	House *house = new House("house",VecPos(0,4),VecPos(10,5));
 	swRegisteEntity("world",house);
-	winPaint.add(role);
-	winPaint.addhouse(house);
+	winPaint.addHouse(house);
+
+	for (int i = 0; i < 3; i++){
+		char str[64];
+		sprintf(str,"role_%d",i);
+		double p1 = 2;//i%17 * 0.4;
+		double p2 = i%13 ;
+		role = new Role(str,VecPos(p1,p2),VecPos(p1 + 0.1,p2+ 0.1),1.0);
+		swRegisteEntity("world",role);
+		winPaint.add(role);
+	}
 }
 void UpdatePaint(HDC hdc){
 	swUpdateWorld("world");
@@ -53,15 +40,15 @@ void UpdatePaint(HDC hdc){
 void UpdateWorld(WPARAM wParam,LPARAM lparam){
 	AppliedForce force;
 	if (wParam == VK_LEFT){
-		force.Elements[0] = -10;
+		force[0] = -10;
 	}else if (wParam == VK_RIGHT){
-		force.Elements[0] = 10;
+		force[0] = 10;
 	}else if (wParam == VK_UP){
-		force.Elements[1] = -10;
+		force[1] = -10;
 	}else if (wParam == VK_DOWN){
-		force.Elements[1] = 10;
+		force[1] = 10;
 	}
-	swGetEntity("world","player")->addForce(force);
+	swGetEntity("world","role_0")->addForce(force);
 }
 void DestroyWorld(){
 	swDestroyAllWorld();

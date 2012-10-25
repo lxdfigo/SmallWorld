@@ -12,13 +12,16 @@ namespace swd{
 #ifdef TWO_DIMENSION_PHYSICAL_ENGINE
 	static const unsigned DIMENSION = 2;
 	typedef Vec2d VecPos;
+	typedef Trans3x3d Transform;
 #else
 	static const unsigned DIMENSION = 3;
 	typedef Vec3d VecPos;
+	typedef Trans4x4d Transform;
 #endif
 
 #define MAXNUM 1E20
 #define MINNUM -1E20
+
 
 	enum SimMask{
 		NOMASK = 0,

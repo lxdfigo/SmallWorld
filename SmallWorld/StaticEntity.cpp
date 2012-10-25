@@ -1,28 +1,27 @@
 #include "StaticEntity.h"
+#include "BoxBody.h"
+#include "PolyBody.h"
 
 using namespace swd;
 
-StaticEntity::StaticEntity(SWID id):Entity(id)
-{
-	simMask = NoGravity;
+StaticEntity::StaticEntity(SWID id,VecPos pos,VecPos size):Entity(id){
+	simMask = STATIC;
+	body = new BoxBody(pos,size,MAXNUM);
+
+}
+StaticEntity::StaticEntity(SWID id,RPolygon poly):Entity(id){
+	simMask = STATIC;
+	body = new PolyBody(poly,MAXNUM);
 }
 
 StaticEntity::~StaticEntity(void)
 {
 }
 
-bool StaticEntity::checkRigidEntityCollided(Entity*obj,Collision *col){
-
-	return false;
+void StaticEntity::solveCollision(Entity*obj,Collision *col){
+	return;
 }
-bool StaticEntity::checkStaticEntityCollided(Entity*obj,Collision *col){
-	return false;
-}
-bool StaticEntity::checkSoftEntityCollided(Entity*obj,Collision *col){
 
-	return false;
-}
-bool StaticEntity::checkHydroEntityCollided(Entity*obj,Collision *col){
-
-	return false;
+void StaticEntity::updateCollision(Collision *col){
+	return;
 }

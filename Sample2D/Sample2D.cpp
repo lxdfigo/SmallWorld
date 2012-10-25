@@ -115,12 +115,13 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    {
       return FALSE;
    }
-   SetTimer(hWnd,1,1000,NULL);
+   SetTimer(hWnd,1,1000.0/FPS,NULL);
 
    InitWorld();
 
    ShowWindow(hWnd, nCmdShow);
    UpdateWindow(hWnd);
+
 
    return TRUE;
 }

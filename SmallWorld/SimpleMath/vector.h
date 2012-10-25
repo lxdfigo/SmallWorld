@@ -3,18 +3,28 @@
 #define __VECTOR_H
 
 #include <math.h>
+#include <stdarg.h> 
+#include <stdio.h>
 
 template<class T, int DIMENSION>
 class CVector
 {
-public:
+private:
 	T Elements[DIMENSION];
 
+public:
 	CVector(T f = 0){
 		for (int i = 0; i < DIMENSION; i++){
 			this->Elements[i] = f;
-		}
+		} 
 	}
+	CVector(T v1, T v2, ...){
+		T *p = (T*)(&v1);
+		for (int i = 0; i < DIMENSION; i++){
+			this->Elements[i] = (T)(*(p+i));
+		} 
+	}
+
 	CVector(const CVector<int,DIMENSION>& vec);
 	CVector(const CVector<float,DIMENSION>& vec);
 	CVector(const CVector<double,DIMENSION>& vec);
@@ -38,6 +48,7 @@ public:
 	inline T   operator [] (int i) const { return Elements[i]; }
 
 	inline T Length() const;
+	inline T Length2() const;
 
 	inline T Dot(const CVector& Vector) const;
 	T Distance(const CVector& Vector) const;
@@ -60,6 +71,11 @@ public:
 		return m;
 	}
 
+	void setAll(T v){
+		for (int i = 0; i < DIMENSION; i++){
+			this->Elements[i] = v;
+		}
+	}
 	void zero(){
 		for (int i = 0; i < DIMENSION; i++){
 			this->Elements[i] = 0;
@@ -71,7 +87,7 @@ template<class T, int DIMENSION>
 inline CVector<T,DIMENSION> operator*(T calar, const CVector<T,DIMENSION>& Vector){
 	CVector<T,DIMENSION> Result;
 	for (int i = 0; i < DIMENSION; i++){
-		Result.Elements[i] = Vector.Elements[i] * calar;
+		Result[i] = Vector[i] * calar;
 	}
 	return Result;
 }
@@ -79,7 +95,7 @@ inline CVector<T,DIMENSION> operator*(T calar, const CVector<T,DIMENSION>& Vecto
 template<class T, int DIMENSION>
 inline CVector<T,DIMENSION>& CVector<T,DIMENSION>::operator=(const CVector& Vector) {
 	for (int i = 0; i < DIMENSION; i++){
-		this->Elements[i] = Vector.Elements[i];
+		this->Elements[i] = Vector[i];
 	}
 	return *this;
 }
@@ -89,7 +105,7 @@ template<class T, int DIMENSION>
 inline bool CVector<T,DIMENSION>::operator < (const CVector<T,DIMENSION>& Vector) const {
 	bool Result = true;
 	for (int i = 0; i < DIMENSION; i++){
-		if (this->Elements[i] >=  Vector.Elements[i]){
+		if (this->Elements[i] >=  Vector[i]){
 			Result = false;
 			break;
 		}
@@ -101,7 +117,7 @@ template<class T, int DIMENSION>
 inline bool CVector<T,DIMENSION>::operator > (const CVector<T,DIMENSION>& Vector) const {
 	bool Result = true;
 	for (int i = 0; i < DIMENSION; i++){
-		if (this->Elements[i] <=  Vector.Elements[i]){
+		if (this->Elements[i] <=  Vector[i]){
 			Result = false;
 			break;
 		}
@@ -111,25 +127,25 @@ inline bool CVector<T,DIMENSION>::operator > (const CVector<T,DIMENSION>& Vector
 template<class T, int DIMENSION>
 CVector<T,DIMENSION>::CVector(const CVector<int,DIMENSION> &vec){
 	for (int i = 0; i < DIMENSION; i++){
-		this->Elements[i] = vec.Elements[i];
+		this->Elements[i] = vec[i];
 	}
 }
 template<class T, int DIMENSION>
 CVector<T,DIMENSION>::CVector(const CVector<float,DIMENSION> &vec){
 	for (int i = 0; i < DIMENSION; i++){
-		this->Elements[i] = vec.Elements[i];
+		this->Elements[i] = vec[i];
 	}
 }
 template<class T, int DIMENSION>
 CVector<T,DIMENSION>::CVector(const CVector<double,DIMENSION> &vec){
 	for (int i = 0; i < DIMENSION; i++){
-		this->Elements[i] = vec.Elements[i];
+		this->Elements[i] = vec[i];
 	}
 }
 template<class T, int DIMENSION>
 CVector<T,DIMENSION>& CVector<T,DIMENSION>::operator+=(const CVector<T,DIMENSION>& Vector) {
 	for (int i = 0; i < DIMENSION; i++){
-		this->Elements[i] += Vector.Elements[i];
+		this->Elements[i] += Vector[i];
 	}
 	return *this;
 }
@@ -137,7 +153,7 @@ CVector<T,DIMENSION>& CVector<T,DIMENSION>::operator+=(const CVector<T,DIMENSION
 template<class T, int DIMENSION>
 CVector<T,DIMENSION>& CVector<T,DIMENSION>::operator-=(const CVector<T,DIMENSION>& Vector) {
 	for (int i = 0; i < DIMENSION; i++){
-		this->Elements[i] -= Vector.Elements[i];
+		this->Elements[i] -= Vector[i];
 	}
 	return *this;
 }
@@ -162,7 +178,7 @@ template<class T, int DIMENSION>
 inline CVector<T,DIMENSION> CVector<T,DIMENSION>::operator-(const CVector<T,DIMENSION>& Vector) const {
 	CVector<T,DIMENSION> Result;
 	for (int i = 0; i < DIMENSION; i++){
-		Result.Elements[i] = this->Elements[i] - Vector.Elements[i];
+		Result[i] = this->Elements[i] - Vector[i];
 	}
 	return Result;
 }
@@ -171,7 +187,7 @@ template<class T, int DIMENSION>
 CVector<T,DIMENSION> CVector<T,DIMENSION>::operator*(T Scalar) const{
 	CVector<T,DIMENSION> Result;
 	for (int i = 0; i < DIMENSION; i++){
-		Result.Elements[i] = this->Elements[i] * Scalar;
+		Result[i] = this->Elements[i] * Scalar;
 	}
 	return Result;
 }
@@ -180,7 +196,7 @@ template<class T, int DIMENSION>
 CVector<T,DIMENSION> CVector<T,DIMENSION>::operator/(T Scalar) const{
 	CVector<T,DIMENSION> Result;
 	for (int i = 0; i < DIMENSION; i++){
-		Result.Elements[i] = this->Elements[i] / Scalar;
+		Result[i] = this->Elements[i] / Scalar;
 	}
 	return Result;
 }
@@ -189,7 +205,7 @@ template<class T, int DIMENSION>
 CVector<T,DIMENSION> CVector<T,DIMENSION>::operator/(const CVector<T,DIMENSION>& Vector) const{
 	CVector<T,DIMENSION> Result;
 	for (int i = 0; i < DIMENSION; i++){
-		Result.Elements[i] = this->Elements[i] / Vector.Elements[i];
+		Result[i] = this->Elements[i] / Vector[i];
 	}
 	return Result;
 }
@@ -198,7 +214,7 @@ template<class T, int DIMENSION>
 CVector<T,DIMENSION> CVector<T,DIMENSION>::operator*(const CVector<T,DIMENSION>& Vector) const{
 	CVector<T,DIMENSION> Result;
 	for (int i = 0; i < DIMENSION; i++){
-		Result.Elements[i] = this->Elements[i] * Vector.Elements[i];
+		Result[i] = this->Elements[i] * Vector[i];
 	}
 	return Result;
 }
@@ -207,18 +223,23 @@ template<class T, int DIMENSION>
 CVector<T,DIMENSION> CVector<T,DIMENSION>::operator+(const CVector<T,DIMENSION>& Vector) const {
 	CVector<T,DIMENSION> Result;
 	for (int i = 0; i < DIMENSION; i++){
-		Result.Elements[i] = this->Elements[i] + Vector.Elements[i];
+		Result[i] = this->Elements[i] + Vector[i];
 	}
 	return Result;
 }
 
 template<class T, int DIMENSION>
 inline T  CVector<T,DIMENSION>::Length() const{
+	return sqrtf(Length2());
+}
+
+template<class T, int DIMENSION>
+inline T  CVector<T,DIMENSION>::Length2() const{
 	T Length = 0.0f;
 	for (int i = 0; i < DIMENSION; i++){
 		Length += this->Elements[i] * this->Elements[i];
 	}
-	return sqrtf(Length);
+	return Length;
 }
 
 template<class T, int DIMENSION>
@@ -258,7 +279,7 @@ template<class T, int DIMENSION>
 inline T CVector<T,DIMENSION>::Dot(const CVector<T,DIMENSION>& Vector) const{
 	T Result = 0.0f;
 	for (int i = 0; i < DIMENSION; i++){
-		Result += this->Elements[i] * Vector.Elements[i];
+		Result += this->Elements[i] * Vector[i];
 	}
 	return Result;
 }

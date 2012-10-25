@@ -5,38 +5,147 @@ namespace swd{
 
 	class Entity;
 
-	struct AABB
-	{
+
+	struct DimItem{
+	private:
+		VecPos v[DIMENSION];
+	public:
+		inline VecPos & operator [] (int i){ return v[i];}
+		inline VecPos   operator [] (int i) const { return v[i]; }
+	};
+
+	struct Line{
+	public:
 		VecPos begin;
 		VecPos end;
 
-		AABB(const AABB& aabb):begin(aabb.begin),end(aabb.end){}
-		AABB(VecPos b,VecPos e):begin(b),end(e){}
+	public:
+		Line(const Line& line):begin(line.begin),end(line.end){	}
+		Line(VecPos b,VecPos e):begin(b),end(e){}
+		Line(const DimItem &items):begin(items[0]),end(items[1]){}
+
+		VecPos getPos(int d,double v){
+			VecPos result;
+			result[d] = v;
+#ifdef TWO_DIMENSION_PHYSICAL_ENGINE
+			for(int i = 0; i < DIMENSION; ++i){
+				if (d != i){
+					if (end[d] != begin[d])
+						result[i] = (end[i] - begin[i]) * (result[d] - begin[d]) / (end[d] - begin[d]) + begin[i];
+					else
+						result[i] = begin[i];
+				}
+			}
+#else
+
+#endif
+			return result;
+		}
+		VecPos getVec(){
+			return begin - end;
+		}
+	};
+
+
+	struct Triangle{
+	private:
+		VecPos v1,v2,v3;
+	public:
+		Triangle(const Triangle& tri):v1(tri.v1),v2(tri.v2),v3(tri.v3){}
+		Triangle(VecPos p1,VecPos p2,VecPos p3):v1(p1),v2(p2),v3(p3){}
+		Triangle(const DimItem &items):v1(items[0]),v2(items[1]),v3(items[2]){}		
+	};
+
+	struct AABB
+	{
+	private:
+		VecPos begin;
+		VecPos end;
+	public:
+		AABB(const AABB& aabb):begin(aabb.begin),end(aabb.end){	}
+		AABB(VecPos b,VecPos e):begin(b),end(e){
+			standardizate();
+		}
 		AABB(){}
+		VecPos getBegin(){return begin;}
+		VecPos getEnd(){return end;}
+
+		void reset(VecPos b,VecPos e){
+			begin = b; end = e;
+			standardizate();
+		}
+		void standardizate(){
+			for(int i = 0; i <DIMENSION; ++i){
+				if (end[i] < begin[i]){
+					double tmp = begin[i];
+					begin[i] = end[i];
+					end[i] = tmp;
+				}
+			}
+		}
 
 		bool isCross(AABB &aabb){
-			if (aabb.isContain(begin) || isContain(aabb.begin)){
-				return true;
+			VecPos result;
+			for(int i = 0; i < DIMENSION; i++){
+				if (aabb.begin[i] > begin[i] && aabb.begin[i] < end[i]) result[i] = 1.0;
+				if (aabb.end[i] > begin[i] && aabb.end[i] < end[i]) result[i] = 1.0;
 			}
+			if (result > VecPos()) return true;
+			result.zero();
+			for(int i = 0; i < DIMENSION; i++){
+				if (begin[i] > aabb.begin[i] && begin[i] < aabb.end[i]) result[i] = 1.0;
+				if (end[i] > aabb.begin[i] && end[i] < aabb.end[i]) result[i] = 1.0;
+			}
+			if (result > VecPos()) return true;
+			
 			return false;
 		}
-
-		bool isCross(AABB &aabb,AABB &cross){
-
-			if (isContain(aabb.end)){
-				cross.begin = (begin);
-				cross.end = (aabb.end);
-				return true;
-			}else if (isContain(aabb.begin)){
-				cross.begin = (aabb.begin);
-				cross.end = (end);
-				return true;
-			}
-			return false;
-		}
-
 		bool isContain(VecPos pos){
 			if ( pos > begin && pos < end){
+				return true;
+			}
+			return false;
+		}
+		bool isCross(Line line){
+#ifdef TWO_DIMENSION_PHYSICAL_ENGINE
+			VecPos v1 = line.getPos(0,begin[0]);
+			VecPos v2 = line.getPos(0,end[0]);
+			if ((v1[0] - v1[1]) * (v2[0] * v2[1]) < 0){
+				return true;
+			}
+#else
+#endif
+			return false;
+		}
+		bool solveLine(Line &line){
+			double dis = MAXNUM;
+			bool sign = false;
+			for(int i = 0; i < DIMENSION; ++i){
+				VecPos v1 = line.getPos(i,begin[i]);
+				VecPos v2 = line.getPos(i,end[i]);
+				if (isOnBox(v1)){
+					double tmp = line.begin.SquaredDistance(v1);
+					if (tmp < dis){
+						line.end = v1;
+						dis = tmp;
+						sign = true;
+					}
+				}
+				if (isOnBox(v2)){
+					double tmp = line.begin.SquaredDistance(v2);
+					if (tmp < dis){
+						line.end = v2;
+						dis = tmp;
+						sign = true;
+					}
+				}
+			}
+			return sign;
+		}
+		bool isOnBox(VecPos &pos){
+			VecPos EpsilonVec;
+			EpsilonVec.setAll(0.01);
+			if ( pos > begin - EpsilonVec && pos < end + EpsilonVec){
 				return true;
 			}
 			return false;
@@ -44,9 +153,10 @@ namespace swd{
 	};
 	struct RSphere
 	{
+	private:
 		VecPos center;
 		double length;
-
+	public:
 		RSphere(VecPos c,double l):center(c),length(l){}
 		RSphere():length(0){}
 
@@ -59,86 +169,70 @@ namespace swd{
 	};
 
 	struct RPolygon{
-		std::vector<VecPos> vexs;
+	private:
+		std::vector<DimItem> items;
+	public:
 		RPolygon(){}
-		RPolygon(const AABB &aabb){
+		RPolygon(const AABB &items){
+			computeAABB();
 		}
 		RPolygon(RPolygon &poly){
-			vexs.resize(poly.vexs.size());
-			for(unsigned i = 0; i < poly.vexs.size(); ++i){
-				vexs[i] = poly.vexs[i];
+			items.resize(poly.items.size());
+			for(unsigned i = 0; i < poly.items.size(); ++i){
+				items[i] = poly.items[i];
 			}
+			computeAABB();
 		}
-
-
 		~RPolygon(){}
 
-		void add(VecPos pos){vexs.push_back(pos);}
-		void clear(){vexs.clear();}
-		inline double getTriangleArea(VecPos v1,VecPos v2){
-			return v1.Elements[0] * v2.Elements[1] - v2.Elements[0] * v1.Elements[1];
-		}
-		inline double getTriangleArea(VecPos v1,VecPos v2,VecPos p){
-			double result = abs(
-				p.Elements[0] * v1.Elements[1] -
-				p.Elements[0] * v2.Elements[1] -
-				v1.Elements[0] * p.Elements[1] +
-				v1.Elements[0] * v2.Elements[1] +
-				v2.Elements[0] * p.Elements[1] -
-				v2.Elements[0] * v1.Elements[1]
-				);
-			return result;
-		}
+		inline DimItem & operator [] (int i){ return items[i];}
+		inline DimItem   operator [] (int i) const { return items[i]; }
+		inline unsigned size(){return items.size();}
+		inline void add(DimItem itr){items.push_back(itr); updateAABB(itr);}
+		inline void clear(){items.clear();}
+		///////////////////////////////////////////////////////////////////////////////////
+		//Only 2D solution * problem
+		//RPP
 		bool isContain(VecPos pos){
 			bool inside = false;
-			double polygon_area = 0;
-			double trigon_area = 0;
-
-			for (unsigned i = 0, j = vexs.size() - 1;i < vexs.size();j = i++){
-				polygon_area += getTriangleArea(vexs[i],vexs[j]);
-				trigon_area += getTriangleArea(vexs[i],vexs[j],pos);
-			}
-
-			trigon_area *= 0.5;
-			polygon_area = abs(polygon_area * 0.5);
-			if ( fabs(trigon_area - polygon_area) < 1e-7 )
-				inside = true;
 			return inside;
 		}
 		bool isCross(RPolygon &poly,RPolygon &cross){
-			for(unsigned i = 0; i < vexs.size(); ++i){
-				if (poly.isContain(vexs[i]))
-					return true;
-			}
-			for(unsigned i = 0; i < poly.vexs.size(); ++i){
-				if (isContain(poly.vexs[i]))
-					return true;
-			}
+
 			return false;
 		}
 
-		AABB getAABB(){
-			VecPos b(MAXNUM),e(MINNUM);
-			for(unsigned i = 0; i < DIMENSION; ++i){
-				for(unsigned j = 0; j < vexs.size(); ++j){
-					if (b.Elements[i] > vexs[j].Elements[i]) b.Elements[i] = vexs[j].Elements[i];
-					if (e.Elements[i] < vexs[j].Elements[i]) e.Elements[i] = vexs[j].Elements[i];
+		AABB getAABB(){ return aabb;}
+		//RPP
+		///////////////////////////////////////////////////////////////////////////////////
+	private:
+		AABB aabb;
+		void updateAABB(DimItem itr){
+			VecPos begin,end;
+			begin = aabb.getBegin();
+			end = aabb.getEnd();
+			for(unsigned j = 0; j < DIMENSION; ++j){
+				for(unsigned i = 0; i < DIMENSION; ++i){
+					if (begin[i] > itr[j][i]) begin[i] = itr[j][i];
+					if (end[i] < itr[j][i]) end[i] = itr[j][i];
 				}
 			}
-			return AABB(b,e);
+			aabb.reset(begin,end);
 		}
-
-		void generateByBox(VecPos p1,VecPos p2){
-			VecPos vex;
-			generateVex(p1,p2,vex,DIMENSION-1);
-		}
-	private:
-		void generateVex(VecPos p1,VecPos p2,VecPos &vex,int loop){
-			if (loop < 0){	add(vex);	return;	}
-			vex.Elements[loop] = p1.Elements[loop];
-			generateVex(p1,p2,vex,loop-1);
-			vex.Elements[loop] = p2.Elements[loop];
-			generateVex(p1,p2,vex,loop-1);
+		void computeAABB(){
+			VecPos vmax,vmin;
+			vmax.setAll(MINNUM);
+			vmin.setAll(MAXNUM);
+			for(unsigned j = 0; j < items.size(); ++j){
+				for(unsigned k = 0; k < DIMENSION; ++k){
+					for(unsigned i = 0; i < DIMENSION; ++i){
+						if (vmax[i] < items[j][k][i]) vmax[i] = items[j][k][i];
+						if (vmin[i] > items[j][k][i]) vmin[i] = items[j][k][i];
+					}
+				}
+			}
+			aabb.reset(vmin,vmax);
+			return ;
 		}
 	};
 
@@ -178,10 +272,12 @@ namespace swd{
 		}
 		unsigned size(){return _cur;}
 
+		///////////////////////////////////////////////////////////
+		//resize * problem
 		Collision * current(){
 			if (_cur >= _size){
 				_size = _size<<1;
-				collisions.reserve(_size);
+				collisions.resize(_size);
 			}
 			return &collisions[_cur];
 		}

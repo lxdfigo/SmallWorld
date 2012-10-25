@@ -14,11 +14,15 @@ void EntityTree::add(Entity *obj){
 
 void EntityTree::solve(Entity *obj){
 	for(unsigned j = 0; j < entitys.size(); ++j){
-		Collision *col = collisionPool.current();
-		col->first = obj;
-		col->second = entitys[j];
-		if (obj->solve(entitys[j],col)){
-			collisionPool.increase();
+		if ((*obj) != (*entitys[j])){
+			if (obj->getAABB().isCross(entitys[j]->getAABB())){
+				Collision *col = collisionPool.current();
+				col->first = obj;
+				col->second = entitys[j];
+				if (obj->solve(entitys[j],col)){
+					collisionPool.increase();
+				}
+			}
 		}
 	}
 }
@@ -33,7 +37,7 @@ void EntityTree::update(Timer &timer){
 	}
 
 	for(unsigned i = 0; i < collisionPool.size(); ++i){
-		collisionPool[i]->first->checkCollision(collisionPool[i]);
+		collisionPool[i]->first->collided(collisionPool[i]);
 	}
 	collisionPool.clear();
 }
