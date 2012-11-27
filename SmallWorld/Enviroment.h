@@ -1,5 +1,6 @@
 #pragma once
 #include "Entity.h"
+#include "EnviForceAction.h"
 
 namespace swd{
 	struct EnvConfig{
@@ -14,9 +15,8 @@ namespace swd{
 
 		void init(EnvConfig config);
 		void update(Entity *obj);
+		Action * getAction(){return action;}
 	private:
-		AppliedForce gravity;
-		AppliedForce wind;
-		AppliedForce other;
+		EnviForceAction * action;
 	};
 }

@@ -2,21 +2,17 @@
 using namespace swd;
 
 Enviroment::Enviroment(void){
+	action = new EnviForceAction("environment");
 }
 
-Enviroment::~Enviroment(void)
-{
+Enviroment::~Enviroment(void){
+	delete action;
 }
 
 void Enviroment::init(EnvConfig config){
-	gravity = config.gravity;
-	wind = config.wind;
+	action->addForce(config.gravity);
+	action->addForce(config.wind);
 }
 void Enviroment::update(Entity *obj){
-	if (!obj->isMask(NoGravity)){
-		obj->addForce(gravity);
-	}
-	if (!obj->isMask(NoResistence)){
-		obj->addForce(wind);
-	}
+
 }

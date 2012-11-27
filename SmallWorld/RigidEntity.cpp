@@ -4,23 +4,39 @@
 
 using namespace swd;
 
-RigidEntity::RigidEntity(SWID id,VecPos pos,VecPos size,double ma):Entity(id){
+RigidEntity::RigidEntity(SWID id,VecPos pos,VecPos size):Entity(id){
 	simMask = NOMASK;
-	body = new BoxBody(pos,size,ma);
-
+	body = new BoxBody(pos,size);
+	mass = 1;
+	friction_coef = 0.7;
 }
-RigidEntity::RigidEntity(SWID id,RPolygon poly, double ma):Entity(id){
+
+RigidEntity::RigidEntity(SWID id,RPolygon poly):Entity(id){
 	simMask = NOMASK;
-	body = new PolyBody(poly,ma);
+	body = new PolyBody(poly);
+	mass = 1;
+	friction_coef = 0.7;
 }
 
 RigidEntity::~RigidEntity(void){
 }
 
 
-void RigidEntity::solveCollision(Entity*obj,Collision *col){
-	body->solve(obj->getBody(),col);
+void RigidEntity::setStep(Timer &timer) {
+
 }
-void RigidEntity::updateCollision(Collision *col){
-	getBody()->attack(col->second->getBody());
+bool RigidEntity::update(){
+	dirSpeed += force / mass;
+	position += dirSpeed;
+	return true;
+}
+bool RigidEntity::integrate(){
+
+	return true;
+}
+void RigidEntity::addForce(AppliedForce f){
+	force += f;
+}
+void RigidEntity::addForceOnPoint(AppliedForce f,VecPos p){
+	force += f;
 }

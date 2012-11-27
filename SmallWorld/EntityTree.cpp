@@ -12,34 +12,41 @@ void EntityTree::add(Entity *obj){
 	entitys.push_back(obj);
 }
 
-void EntityTree::solve(Entity *obj){
+void EntityTree::checkCross(Entity *obj){
 	for(unsigned j = 0; j < entitys.size(); ++j){
 		if ((*obj) != (*entitys[j])){
+			Entity *obj2 = entitys[j];
 			if (obj->getAABB().isCross(entitys[j]->getAABB())){
 				Collision *col = collisionPool.current();
 				col->first = obj;
 				col->second = entitys[j];
-				if (obj->solve(entitys[j],col)){
-					collisionPool.increase();
-				}
+				collisionPool.increase();
 			}
 		}
 	}
 }
 
+void EntityTree::solveCross(Entity *obj){
+	//for(unsigned j = 0; j < entitys.size(); ++j){
+	//	if ((*obj) != (*entitys[j])){
+	//		Entity *obj2 = entitys[j];
+	//		if (obj->getAABB().isCross(entitys[j]->getAABB())){
+	//			obj->solve(entitys[j],NULL);
+	//		}
+	//	}
+	//}
+}
+
 void EntityTree::update(Timer &timer){
 	for(unsigned i = 0; i < entitys.size(); ++i){
-		entitys[i]->advance(timer);
+		entitys[i]->setStep(timer);
+		entitys[i]->applyActions();
+		entitys[i]->applyConstraints();
+		entitys[i]->integrate();
 	}
-
 	for(unsigned i = 0; i < entitys.size(); ++i){
-		solve(entitys[i]);
+		checkCross(entitys[i]);
 	}
-
-	for(unsigned i = 0; i < collisionPool.size(); ++i){
-		collisionPool[i]->first->collided(collisionPool[i]);
-	}
-	collisionPool.clear();
 }
 
 

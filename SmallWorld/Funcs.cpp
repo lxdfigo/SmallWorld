@@ -27,7 +27,8 @@ void swd::swUpdateWorld(SWID wid){
 	szSmallWorlds[wid]->update();
 }
 void swd::swDestroyWorld(SWID wid){ 
-	delete szSmallWorlds[wid];
+	if (szSmallWorlds[wid] != NULL)
+		delete szSmallWorlds[wid];
 	szSmallWorlds[wid] = NULL;
 }
 void swd::swDestroyAllWorld(){ 
@@ -37,3 +38,4 @@ void swd::swDestroyAllWorld(){
 	}
 	szSmallWorlds.clear();
 }
+

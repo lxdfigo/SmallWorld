@@ -5,16 +5,15 @@ namespace swd{
 
 	class Entity;
 
-
-	struct DimItem{
-	private:
-		VecPos v[DIMENSION];
+	struct Shape{
+	protected:
+		VecPos center;
 	public:
-		inline VecPos & operator [] (int i){ return v[i];}
-		inline VecPos   operator [] (int i) const { return v[i]; }
+		VecPos getCenter(){return center;}
 	};
 
-	struct Line{
+
+	struct Line : public Shape{
 	public:
 		VecPos begin;
 		VecPos end;
@@ -22,55 +21,99 @@ namespace swd{
 	public:
 		Line(const Line& line):begin(line.begin),end(line.end){	}
 		Line(VecPos b,VecPos e):begin(b),end(e){}
-		Line(const DimItem &items):begin(items[0]),end(items[1]){}
+		Line(){}
 
-		VecPos getPos(int d,double v){
-			VecPos result;
+		bool isCrossPlan(int d,double v){
+			double len = abs(end[d] - begin[d]);
+			double l = v - (end[d] > begin[d] ? begin[d] : end[d]);
+			if (l > 0 && l < len)  return true;
+			return false;
+		}
+		bool isCross(Line & line){
+			return false;
+		}
+		bool getPos(int d,double v,VecPos &result){
+			if (!isCrossPlan(d,v)) return false;
 			result[d] = v;
 #ifdef TWO_DIMENSION_PHYSICAL_ENGINE
 			for(int i = 0; i < DIMENSION; ++i){
 				if (d != i){
-					if (end[d] != begin[d])
-						result[i] = (end[i] - begin[i]) * (result[d] - begin[d]) / (end[d] - begin[d]) + begin[i];
-					else
-						result[i] = begin[i];
+					result[i] = (end[i] - begin[i]) * (result[d] - begin[d]) / (end[d] - begin[d]) + begin[i];
 				}
 			}
 #else
 
 #endif
-			return result;
+			return true;
+		}
+		int PointAtLineLeftRight(VecPos ptTest){
+			VecPos v1, v2;
+			v1 = begin - ptTest;
+			v2 = end - ptTest;
+			
+			//problem 2D
+			double nRet = begin[0] * end[1] - begin[1] * end[0];
+			if (nRet == 0)
+				return 0;
+			else if (nRet > 0)
+				return 1;
+			else if (nRet < 0)
+				return -1;
+
+			return 0;
 		}
 		VecPos getVec(){
 			return begin - end;
 		}
+		VecPos getReverseVec(){
+			return end - begin;
+		}
+		double Length(){
+			return begin.Distance(end);
+		}
+		double Length2(){
+			return begin.SquaredDistance(end);
+		}
+		int LongestDimension(){
+			VecPos pos = getVec();
+			double dis = -1;
+			int dim = 0;
+			for(int i = 0; i < DIMENSION; i++){
+				double tmp = fabs(end[i] - begin[i]);
+				if (tmp > dis){
+					dis = tmp;
+					dim = i;
+				}
+			}
+			return dim;
+		}
 	};
 
 
-	struct Triangle{
+	struct Triangle : public Shape{
 	private:
 		VecPos v1,v2,v3;
 	public:
 		Triangle(const Triangle& tri):v1(tri.v1),v2(tri.v2),v3(tri.v3){}
 		Triangle(VecPos p1,VecPos p2,VecPos p3):v1(p1),v2(p2),v3(p3){}
-		Triangle(const DimItem &items):v1(items[0]),v2(items[1]),v3(items[2]){}		
 	};
 
-	struct AABB
+	struct AABB : public Shape
 	{
 	private:
+		VecPos half_dimension;
+	public:
 		VecPos begin;
 		VecPos end;
-	public:
-		AABB(const AABB& aabb):begin(aabb.begin),end(aabb.end){	}
+		AABB(const AABB& aabb):begin(aabb.begin),end(aabb.end){
+			standardizate();
+		}
 		AABB(VecPos b,VecPos e):begin(b),end(e){
 			standardizate();
 		}
 		AABB(){}
-		VecPos getBegin(){return begin;}
-		VecPos getEnd(){return end;}
 
-		void reset(VecPos b,VecPos e){
+		void reset(const VecPos& b,const VecPos& e){
 			begin = b; end = e;
 			standardizate();
 		}
@@ -82,59 +125,56 @@ namespace swd{
 					end[i] = tmp;
 				}
 			}
+			center = (begin + end) * 0.5;
+			half_dimension = (end - begin) * 0.5;
+	
 		}
-
 		bool isCross(AABB &aabb){
-			VecPos result;
 			for(int i = 0; i < DIMENSION; i++){
-				if (aabb.begin[i] > begin[i] && aabb.begin[i] < end[i]) result[i] = 1.0;
-				if (aabb.end[i] > begin[i] && aabb.end[i] < end[i]) result[i] = 1.0;
+				if (fabs(aabb.center[i] - center[i]) > aabb.half_dimension[i] + half_dimension[i])
+					return false;
 			}
-			if (result > VecPos()) return true;
-			result.zero();
+			return true;
+		}
+		int getCrossPlan(AABB &aabb){
+			double dis = MINNUM;
+			int plan = -1;
 			for(int i = 0; i < DIMENSION; i++){
-				if (begin[i] > aabb.begin[i] && begin[i] < aabb.end[i]) result[i] = 1.0;
-				if (end[i] > aabb.begin[i] && end[i] < aabb.end[i]) result[i] = 1.0;
+				double tmp = fabs(aabb.center[i] - center[i]);
+				if (tmp < aabb.half_dimension[i] + half_dimension[i] && tmp > dis){
+					plan = i;
+					dis = tmp;
+				}
 			}
-			if (result > VecPos()) return true;
-			
-			return false;
+			return plan;
 		}
-		bool isContain(VecPos pos){
-			if ( pos > begin && pos < end){
-				return true;
+		bool isContain(VecPos& pos){
+			if (pos < begin || pos > end){
+				return false;
 			}
-			return false;
+			return true;
 		}
-		bool isCross(Line line){
-#ifdef TWO_DIMENSION_PHYSICAL_ENGINE
-			VecPos v1 = line.getPos(0,begin[0]);
-			VecPos v2 = line.getPos(0,end[0]);
-			if ((v1[0] - v1[1]) * (v2[0] * v2[1]) < 0){
-				return true;
-			}
-#else
-#endif
-			return false;
-		}
+		//Solve the force line cross the AABB and return the longest force. from begin to end pos.
 		bool solveLine(Line &line){
-			double dis = MAXNUM;
+			if (isContain(line.begin) && isContain(line.end))
+				return true;
+
+			double dis = 0;
 			bool sign = false;
 			for(int i = 0; i < DIMENSION; ++i){
-				VecPos v1 = line.getPos(i,begin[i]);
-				VecPos v2 = line.getPos(i,end[i]);
-				if (isOnBox(v1)){
+				VecPos v1;
+				if (line.getPos(i,begin[i],v1)){
 					double tmp = line.begin.SquaredDistance(v1);
-					if (tmp < dis){
+					if (tmp > dis){
 						line.end = v1;
 						dis = tmp;
 						sign = true;
 					}
 				}
-				if (isOnBox(v2)){
-					double tmp = line.begin.SquaredDistance(v2);
-					if (tmp < dis){
-						line.end = v2;
+				if (line.getPos(i,end[i],v1)){
+					double tmp = line.begin.SquaredDistance(v1);
+					if (tmp > dis){
+						line.end = v1;
 						dis = tmp;
 						sign = true;
 					}
@@ -142,22 +182,23 @@ namespace swd{
 			}
 			return sign;
 		}
-		bool isOnBox(VecPos &pos){
-			VecPos EpsilonVec;
-			EpsilonVec.setAll(0.01);
-			if ( pos > begin - EpsilonVec && pos < end + EpsilonVec){
-				return true;
-			}
-			return false;
+
+		//problem 2D only
+		void getVexs(VecPos* vexs){
+			vexs[0] = begin;
+			vexs[1] = end;
+			vexs[2] = VecPos(begin[0],end[1]);
+			vexs[3] = VecPos(end[0],begin[1]);
 		}
 	};
-	struct RSphere
+	struct RSphere : public Shape
 	{
 	private:
-		VecPos center;
 		double length;
 	public:
-		RSphere(VecPos c,double l):center(c),length(l){}
+		RSphere(VecPos c,double l):length(l){
+			center = c;
+		}
 		RSphere():length(0){}
 
 		bool isContain(VecPos pos){
@@ -168,7 +209,17 @@ namespace swd{
 		}
 	};
 
-	struct RPolygon{
+
+	struct DimItem{
+	private:
+		VecPos v[DIMENSION];
+	public:
+		inline VecPos operator [] (int i){ return v[i];}
+	};
+
+
+	struct RPolygon : public Shape{
+
 	private:
 		std::vector<DimItem> items;
 	public:
@@ -185,9 +236,6 @@ namespace swd{
 		}
 		~RPolygon(){}
 
-		inline DimItem & operator [] (int i){ return items[i];}
-		inline DimItem   operator [] (int i) const { return items[i]; }
-		inline unsigned size(){return items.size();}
 		inline void add(DimItem itr){items.push_back(itr); updateAABB(itr);}
 		inline void clear(){items.clear();}
 		///////////////////////////////////////////////////////////////////////////////////
@@ -205,12 +253,12 @@ namespace swd{
 		AABB getAABB(){ return aabb;}
 		//RPP
 		///////////////////////////////////////////////////////////////////////////////////
-	private:
+	protected:
 		AABB aabb;
 		void updateAABB(DimItem itr){
 			VecPos begin,end;
-			begin = aabb.getBegin();
-			end = aabb.getEnd();
+			begin = aabb.begin;
+			end = aabb.end;
 			for(unsigned j = 0; j < DIMENSION; ++j){
 				for(unsigned i = 0; i < DIMENSION; ++i){
 					if (begin[i] > itr[j][i]) begin[i] = itr[j][i];
@@ -220,7 +268,7 @@ namespace swd{
 			aabb.reset(begin,end);
 		}
 		void computeAABB(){
-			VecPos vmax,vmin;
+			VecPos vmax,vmin,cent;
 			vmax.setAll(MINNUM);
 			vmin.setAll(MAXNUM);
 			for(unsigned j = 0; j < items.size(); ++j){
@@ -229,35 +277,39 @@ namespace swd{
 						if (vmax[i] < items[j][k][i]) vmax[i] = items[j][k][i];
 						if (vmin[i] > items[j][k][i]) vmin[i] = items[j][k][i];
 					}
+					center += items[j][k];
 				}
 			}
+			center /= items.size() * DIMENSION;
 			aabb.reset(vmin,vmax);
 			return ;
 		}
 	};
 
+	struct AttackStatus{
+		DirectSpeed speed;
+		double mass;
+	};
 	struct Collision{
 	public:
 		Entity *first;
 		Entity *second;
-		RPolygon crossArea;
-		bool isCollide;
-		Collision():isCollide(false),first(NULL),second(NULL){}
+		AttackStatus st1,st2;
+		Plan plan;
+
+		Collision():first(NULL),second(NULL){}
 
 		Collision(const Collision & col){
 			first = col.first;
 			second = col.second;
-			crossArea = col.crossArea;
-			isCollide = col.isCollide;
 		}
 
-		Collision(Entity *f,Entity *s):isCollide(false),first(f),second(s){}
+		Collision(Entity *f,Entity *s):first(f),second(s){}
 		~Collision(){
 		}
 		void reset(){
 			first = NULL;
 			second = NULL;
-			isCollide = false;
 		}
 	};
 
@@ -292,4 +344,5 @@ namespace swd{
 			return get(i);
 		}
 	};
+
 }

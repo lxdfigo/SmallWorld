@@ -26,7 +26,6 @@ namespace swd{
 		Enviroment enviroment;
 
 		void advance();
-		void updateEnviroment();
 		void updateEntitys();
 	};
 

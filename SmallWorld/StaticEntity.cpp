@@ -4,24 +4,36 @@
 
 using namespace swd;
 
-StaticEntity::StaticEntity(SWID id,VecPos pos,VecPos size):Entity(id){
+StaticEntity::StaticEntity(SWID id,VecPos pos,VecPos size):
+RigidEntity(id,pos,size){
 	simMask = STATIC;
-	body = new BoxBody(pos,size,MAXNUM);
-
+	mass = MAXNUM;
 }
-StaticEntity::StaticEntity(SWID id,RPolygon poly):Entity(id){
+
+StaticEntity::StaticEntity(SWID id,RPolygon poly):
+RigidEntity(id,poly){
 	simMask = STATIC;
-	body = new PolyBody(poly,MAXNUM);
+	mass = MAXNUM;
 }
 
 StaticEntity::~StaticEntity(void)
 {
 }
 
-void StaticEntity::solveCollision(Entity*obj,Collision *col){
-	return;
-}
+void StaticEntity::setStep(Timer &timer) {
 
-void StaticEntity::updateCollision(Collision *col){
-	return;
+}
+bool StaticEntity::update(){
+
+	return true;
+}
+bool StaticEntity::integrate(){
+
+	return true;
+}
+void StaticEntity::addForce(AppliedForce force){
+
+}
+void StaticEntity::addForceOnPoint(AppliedForce force,VecPos point){
+
 }

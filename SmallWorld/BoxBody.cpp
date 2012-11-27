@@ -3,80 +3,56 @@
 using namespace swd;
 
 
-void BoxBody::advance(Timer &timer){
-	lastBox = box;
-	VecPos mv = speed * timer.step();
-	transform(Transform().makeMoveTrans(mv));
-	speed += appliedForce / mass * timer.step();
-	appliedForce.zero();
-	isMoved = true;
+MomentInertia BoxBody::getInertia(){
+	double Ixx,Iyy,Izz,Ixz,Iyz,Ixy;
+	MomentInertia moment;
+	double lens[DIMENSION];
+	for(int i = 0; i < DIMENSION; ++i){
+		lens[i] = box.end[i] - box.begin[i];
+	}
+	Ixx = (lens[1] * lens[1] + lens[2] * lens[2]) / 12;
+	Iyy = (lens[0] * lens[0] + lens[2] * lens[2]) / 12;
+	Izz = (lens[1] * lens[1] + lens[0] * lens[0]) / 12;
+	return moment;
 }
 
 void BoxBody::transform(Transform & trans){
-	box.reset(trans.trans(box.getBegin()),trans.trans(box.getEnd()));
+	box.reset(trans.trans(box.begin),trans.trans(box.end));
 }
 
 
-VecPos BoxBody::sloveLineCrossAABB(AABB &aabb,Line &line,VecPos &vec){
-	//////////////////////////////////////////////////////////////
-	//
-	//                _____________
-	//              / |            |
-	//             /  |            |
-	//            /   |          \ |
-	//                |___________\|
-	//
-	//
-	//////////////////////////////////////////////////////////////
-
-
-	VecPos moveVec;
-	if (aabb.solveLine(line)){
-		moveVec = line.getVec();
-		double distance = moveVec.Length2();
-		for(int i = 0;i < DIMENSION; ++i){
-			if (line.begin[i] < line.end[i]){
-				VecPos tvec = line.end - line.getPos(i,vec[i]);
-				double tmpdistance = tvec.Length2();
-				if (tmpdistance < distance){
-					moveVec = tvec;
-					distance = tmpdistance;
-				}
-			}
-		}
-	}
-	return moveVec;
-}
-void BoxBody::attack(Body *body){
-	//Update Speed of the two Collision Entitys
-	DirectSpeed v1 = getSpeed();
-	DirectSpeed v2 = body->getSpeed();
-	double m1 = getMass();
-	double m2 = body->getMass();
-	setSpeed((v1 * (m1 - m2) + 2 * m2 * v2) / (m1 + m2));
-}
-
-bool BoxBody::checkBoxCross(Body*body,Collision *col){
+bool BoxBody::checkBoxCross(Body*body,CollideInfo *col){
+	//the compare is finished before for they all the AABB Box 
 	return true;
 }
-bool BoxBody::solveBox(Body*body,Collision *col){
-	if (!isMoved) return true;
-	isMoved = false;
-	Line beginLine(box.getBegin(),lastBox.getBegin());
-	Line endLine(box.getEnd(),lastBox.getEnd());
-
-	VecPos moveVecb = sloveLineCrossAABB(body->getAABB(),beginLine,lastBox.getEnd());
-	VecPos moveVece = sloveLineCrossAABB(body->getAABB(),endLine,lastBox.getBegin());
-	if (moveVece.Length2() < moveVecb.Length2()){
-		transform(Transform().makeMoveTrans(moveVece));
-	}else{
-		transform(Transform().makeMoveTrans(moveVecb));
-	}
-	return false;
-}
-bool BoxBody::checkPolygonCross(Body*body,Collision *col){
-	return false;
-}
-bool BoxBody::solvePolygon(Body*body,Collision *col){
+//bool BoxBody::solveBox(Body*body,CollideInfo *col){
+//
+//	Step One: step back, solve the collision
+//	AABB &aabb = body->getAABB();
+//	VecPos begins[POWER_2_DIMENSION];
+//	VecPos ends[POWER_2_DIMENSION];
+//	box.getVexs(begins);
+//	lastBox.getVexs(ends);
+//
+//	for(int i = 0; i < POWER_2_DIMENSION; ++i){
+//		Line line(begins[i],ends[i]);
+//		if (aabb.solveLine(line)){
+//			if (line.Length2() > backline.Length2()){
+//				backline = line;
+//				
+//				int plan = backline.LongestDimension();//aabb.getCrossPlan(box);
+//				if (plan >= 0 && tmpSpeed[plan] != 0){
+//					collisions[curCollision].plan = plan;
+//					collisions[curCollision].mass = body->getMass();
+//					DirectSpeed &sp = body->getSpeed();
+//					collisions[curCollision].speed = sp[plan];
+//				}
+//			}
+//		}
+//	}
+//
+//	return true;
+//}
+bool BoxBody::checkPolygonCross(Body*body,CollideInfo *col){
 	return false;
 }

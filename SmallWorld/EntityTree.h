@@ -13,7 +13,8 @@ namespace swd{
 		Entity *get(int i){return entitys[i];}
 		Entity *get(SWID oid);
 
-		void solve(Entity *obj);
+		void solveCross(Entity *obj);
+		void checkCross(Entity *obj);
 		unsigned size(){return entitys.size();}
 
 		void update(Timer &timer);

@@ -9,7 +9,8 @@ void InitWorld(){
 	VecPos grav(0,9.8);
 	WorldConfig config;
 	config.envCfg.gravity = grav;
-	config.tmCfg.step = 1.0/FPS;
+	config.tmCfg.step = 0.1/FPS;
+	config.envCfg.wind = VecPos(5,0);
 	world = swCreateWorld("world");
 	swInitWorld("world",config);
 
@@ -23,12 +24,12 @@ void InitWorld(){
 	swRegisteEntity("world",house);
 	winPaint.addHouse(house);
 
-	for (int i = 0; i < 3; i++){
+	for (int i = 0; i < 7; i++){
 		char str[64];
 		sprintf(str,"role_%d",i);
-		double p1 = 2;//i%17 * 0.4;
-		double p2 = i%13 ;
-		role = new Role(str,VecPos(p1,p2),VecPos(p1 + 0.1,p2+ 0.1),1.0);
+		double p1 = i%17 * 0.4 + 1; // 2
+		double p2 = i%13 * 0.3;
+		role = new Role(str,VecPos(p1,p2),VecPos(p1 + 0.1,p2 + 0.1));
 		swRegisteEntity("world",role);
 		winPaint.add(role);
 	}
@@ -48,7 +49,7 @@ void UpdateWorld(WPARAM wParam,LPARAM lparam){
 	}else if (wParam == VK_DOWN){
 		force[1] = 10;
 	}
-	swGetEntity("world","role_0")->addForce(force);
+	//swGetEntity("world","role_0")->addForce(force);
 }
 void DestroyWorld(){
 	swDestroyAllWorld();

@@ -11,30 +11,138 @@ private:
 public:
 	CMatrix(){}
 
-
 	inline CVector<T,DIMENSION> & operator [] (int i) { return Rows[i]; }
 	inline CVector<T,DIMENSION>   operator [] (int i) const { return Rows[i]; }
 
-	CVector<T,DIMENSION> operator * (CVector<T,DIMENSION> &vec){
-		CVector<T,DIMENSION> result;
-		for(int i = 0; i < DIMENSION; ++i){
-			result[i] = Rows[i].Dot(vec);
-		}
-		return result;
-	}
+	CVector<T,DIMENSION> operator * (CVector<T,DIMENSION> &vec);
+	CMatrix operator * (const CMatrix &mat);
+	CMatrix operator * (T scale);
+	CMatrix operator / (T scale);
+	CMatrix operator + (const CMatrix &mat);
+	CMatrix operator - (const CMatrix &mat);
+	CMatrix& operator += (const CMatrix& mat);
+	CMatrix& operator -= (const CMatrix& mat);
+	CMatrix& operator *= (const CMatrix& mat);
+	CMatrix& operator *= (T scale);
+	CMatrix& operator/=(T scale);
 
-	CMatrix operator * (const CMatrix &mat){
-		CMatrix result;
-		for(int i = 0; i < DIMENSION; ++i){
-			for(int j = 0; j < DIMENSION; ++j){
-				for(int k = 0; k < DIMENSION; ++k){
-					result[i][j] += Rows[i][k] * mat[k][j]; 
-				}
+	void zero();
+};
+
+template<class T, int DIMENSION>
+CVector<T,DIMENSION> CMatrix<T,DIMENSION>::operator * (CVector<T,DIMENSION> &vec){
+	CVector<T,DIMENSION> result;
+	for(int i = 0; i < DIMENSION; ++i){
+		result[i] = Rows[i].Dot(vec);
+	}
+	return result;
+}
+
+template<class T, int DIMENSION>
+CMatrix<T,DIMENSION> CMatrix<T,DIMENSION>::operator * (const CMatrix<T,DIMENSION> &mat){
+	CMatrix<T,DIMENSION> result;
+	for(int i = 0; i < DIMENSION; ++i){
+		for(int j = 0; j < DIMENSION; ++j){
+			for(int k = 0; k < DIMENSION; ++k){
+				result[i][j] += Rows[i][k] * mat[k][j]; 
 			}
 		}
-		return result;
 	}
-};
+	return result;
+}
+template<class T, int DIMENSION>
+CMatrix<T,DIMENSION> CMatrix<T,DIMENSION>::operator * (T scale){
+	CMatrix<T,DIMENSION> result;
+	for(int i = 0; i < DIMENSION; ++i){
+		for(int j = 0; j < DIMENSION; ++j){
+			result[i][j] = Rows[i][j] * scale; 
+		}
+	}
+	return result;
+}
+template<class T, int DIMENSION>
+CMatrix<T,DIMENSION> CMatrix<T,DIMENSION>::operator / (T scale){
+	CMatrix<T,DIMENSION> result;
+	for(int i = 0; i < DIMENSION; ++i){
+		for(int j = 0; j < DIMENSION; ++j){
+			result[i][j] = Rows[i][j] / scale; 
+		}
+	}
+	return result;
+}
+template<class T, int DIMENSION>
+CMatrix<T,DIMENSION> CMatrix<T,DIMENSION>::operator + (const CMatrix<T,DIMENSION> &mat){
+	CMatrix<T,DIMENSION> result;
+	for(int i = 0; i < DIMENSION; ++i){
+		for(int j = 0; j < DIMENSION; ++j){
+			result[i][j] = Rows[i][j] + mat[i][j]; 
+		}
+	}
+	return result;
+}
+template<class T, int DIMENSION>
+CMatrix<T,DIMENSION> CMatrix<T,DIMENSION>::operator - (const CMatrix<T,DIMENSION> &mat){
+	CMatrix<T,DIMENSION> result;
+	for(int i = 0; i < DIMENSION; ++i){
+		for(int j = 0; j < DIMENSION; ++j){
+			result[i][j] = Rows[i][j] - mat[i][j]; 
+		}
+	}
+	return result;
+}
+template<class T, int DIMENSION>
+CMatrix<T,DIMENSION>& CMatrix<T,DIMENSION>::operator += (const CMatrix<T,DIMENSION>& mat){
+	for(int i = 0; i < DIMENSION; ++i){
+		for(int j = 0; j < DIMENSION; ++j){
+			this->Rows[i][j] += mat[i][j]; 
+		}
+	}
+	return *this;
+}
+template<class T, int DIMENSION>
+CMatrix<T,DIMENSION>& CMatrix<T,DIMENSION>::operator -= (const CMatrix<T,DIMENSION>& mat){
+	for(int i = 0; i < DIMENSION; ++i){
+		for(int j = 0; j < DIMENSION; ++j){
+			this->Rows[i][j] -= mat[i][j]; 
+		}
+	}
+	return *this;
+}
+template<class T, int DIMENSION>
+CMatrix<T,DIMENSION>& CMatrix<T,DIMENSION>::operator *= (const CMatrix<T,DIMENSION>& mat){
+	for(int i = 0; i < DIMENSION; ++i){
+		for(int j = 0; j < DIMENSION; ++j){
+			this->Rows[i][j] *= mat[i][j]; 
+		}
+	}
+	return *this;
+}
+template<class T, int DIMENSION>
+CMatrix<T,DIMENSION>& CMatrix<T,DIMENSION>::operator *= (T scale){
+	for(int i = 0; i < DIMENSION; ++i){
+		for(int j = 0; j < DIMENSION; ++j){
+			this->Rows[i][j] *= scale; 
+		}
+	}
+	return *this;
+}
+template<class T, int DIMENSION>
+CMatrix<T,DIMENSION>& CMatrix<T,DIMENSION>::operator/=(T scale){
+	for(int i = 0; i < DIMENSION; ++i){
+		for(int j = 0; j < DIMENSION; ++j){
+			this->Rows[i][j] /= scale; 
+		}
+	}
+	return *this;
+}
+template<class T, int DIMENSION>
+void CMatrix<T,DIMENSION>::zero(){
+	for(int i = 0; i < DIMENSION; ++i){
+		for(int j = 0; j < DIMENSION; ++j){
+			Rows[i][j] = 0; 
+		}
+	}
+}
 
 typedef CMatrix<float,2> Mat2x2f;
 typedef CMatrix<float,3> Mat3x3f;
@@ -54,6 +162,12 @@ public:
 		}
 	}
 
+	void reset(){
+		mat.zero();
+		for(int i = 0; i < DIMENSION; ++i){
+			mat[i][i]  = 1.0;
+		}
+	}
 	CTransform& makeMoveTrans(CVector<T,DIMENSION-1>& vec){
 		for(int i = 0; i < DIMENSION-1; ++i){
 			mat[i][DIMENSION-1] += vec[i];

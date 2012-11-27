@@ -6,8 +6,8 @@ using namespace swd;
 class Role : public RigidEntity
 {
 public:
-	Role(SWID id,RPolygon p,double ma):RigidEntity(id,p,ma){}
-	Role(SWID id,VecPos p1,VecPos p2,double ma):RigidEntity(id,p1,p2,ma){}
+	Role(SWID id,RPolygon p):RigidEntity(id,p){}
+	Role(SWID id,VecPos p1,VecPos p2):RigidEntity(id,p1,p2){}
 	~Role(void);
 
 	virtual void callbackCollision(Collision *col){}

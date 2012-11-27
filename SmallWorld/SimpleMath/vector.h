@@ -18,7 +18,14 @@ public:
 			this->Elements[i] = f;
 		} 
 	}
-	CVector(T v1, T v2, ...){
+	CVector(T v1, T v2){
+		this->Elements[0] = v1;
+		this->Elements[1] = v2;
+		for (int i = 2; i < DIMENSION; i++){
+			this->Elements[i] = 0;
+		} 
+	}
+	CVector(T v1, T v2, T v3, ...){
 		T *p = (T*)(&v1);
 		for (int i = 0; i < DIMENSION; i++){
 			this->Elements[i] = (T)(*(p+i));
@@ -54,7 +61,7 @@ public:
 	T Distance(const CVector& Vector) const;
 	T SquaredDistance(const CVector& Vector) const;
 	void Normalize();
-	void UniformRandomHyperSpehere(T rng );
+	void UniformRandomHyperSphere(T rng );
 
 	T minElement(){
 		T m = 1E20;
@@ -230,7 +237,7 @@ CVector<T,DIMENSION> CVector<T,DIMENSION>::operator+(const CVector<T,DIMENSION>&
 
 template<class T, int DIMENSION>
 inline T  CVector<T,DIMENSION>::Length() const{
-	return sqrtf(Length2());
+	return sqrt(Length2());
 }
 
 template<class T, int DIMENSION>
@@ -256,7 +263,7 @@ T CVector<T,DIMENSION>::Distance(const CVector<T,DIMENSION>& Vector) const{
 
 
 template<class T, int DIMENSION>
-void CVector<T,DIMENSION>::UniformRandomHyperSpehere(T rng){
+void CVector<T,DIMENSION>::UniformRandomHyperSphere(T rng){
 	do{
 		for (int i = 0; i < DIMENSION; i++){
 			this->Elements[i] = 2.0f * rng - 1.0f;
@@ -267,7 +274,7 @@ void CVector<T,DIMENSION>::UniformRandomHyperSpehere(T rng){
 
 template<class T, int DIMENSION>
 void CVector<T,DIMENSION>::Normalize(){
-	T Length = sqrtf(this->Dot(*this));
+	T Length = sqrt(this->Dot(*this));
 	T Scale = 1.0f / (Length + 1E-20f);
 
 	for (int i = 0; i < DIMENSION; i++){

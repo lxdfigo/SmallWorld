@@ -170,6 +170,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		UpdatePaint(hdc);
 		EndPaint(hWnd, &ps);
 		RedrawWindow(hWnd,NULL,NULL,0);
+		//Sleep(100);
 		break;
 	case WM_TIMER:
 		InvalidateRect(hWnd,NULL,FALSE);

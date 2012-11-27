@@ -156,48 +156,22 @@
 	</References>
 	<Files>
 		<Filter
-			Name="Periphery"
-			Filter="cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx"
-			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
+			Name="Actions"
 			>
 			<File
-				RelativePath=".\EntityTree.cpp"
+				RelativePath=".\Action.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\EntityTree.h"
+				RelativePath=".\Action.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Enviroment.cpp"
+				RelativePath=".\EnviForceAction.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\Enviroment.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Funcs.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\Funcs.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Timer.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\Timer.h"
-				>
-			</File>
-			<File
-				RelativePath=".\World.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\World.h"
+				RelativePath=".\EnviForceAction.h"
 				>
 			</File>
 		</Filter>
@@ -239,11 +213,27 @@
 			Name="Objects"
 			>
 			<File
+				RelativePath=".\ComEntity.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\ComEntity.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Entity.cpp"
 				>
 			</File>
 			<File
 				RelativePath=".\Entity.h"
+				>
+			</File>
+			<File
+				RelativePath=".\EntityTree.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\EntityTree.h"
 				>
 			</File>
 			<File
@@ -287,22 +277,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Body.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\Body.h"
-				>
-			</File>
-			<File
-				RelativePath=".\BoxBody.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\BoxBody.h"
-				>
-			</File>
-			<File
 				RelativePath=".\PhyStr.cpp"
 				>
 			</File>
@@ -310,12 +284,102 @@
 				RelativePath=".\PhyStr.h"
 				>
 			</File>
+			<Filter
+				Name="Shape"
+				>
+				<File
+					RelativePath=".\Body.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Body.h"
+					>
+				</File>
+				<File
+					RelativePath=".\BoxBody.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\BoxBody.h"
+					>
+				</File>
+				<File
+					RelativePath=".\PolyBody.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\PolyBody.h"
+					>
+				</File>
+			</Filter>
+		</Filter>
+		<Filter
+			Name="Simulation"
+			>
 			<File
-				RelativePath=".\PolyBody.cpp"
+				RelativePath=".\Deactivator.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\PolyBody.h"
+				RelativePath=".\Deactivator.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Status.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Status.h"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="Periphery"
+			Filter="cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx"
+			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
+			>
+			<File
+				RelativePath=".\Enviroment.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Enviroment.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Funcs.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Funcs.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Timer.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Timer.h"
+				>
+			</File>
+			<File
+				RelativePath=".\World.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\World.h"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="Constraints"
+			>
+			<File
+				RelativePath=".\Constraint.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Constraint.h"
 				>
 			</File>
 		</Filter>

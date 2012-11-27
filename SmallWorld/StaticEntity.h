@@ -1,19 +1,20 @@
 #pragma once
-#include "Entity.h"
+#include "RigidEntity.h"
 
 namespace swd{
 	class StaticEntity :
-		public Entity
+		public RigidEntity
 	{
 	public:
 		StaticEntity(SWID id,VecPos pos,VecPos size);
 		StaticEntity(SWID id,RPolygon poly);
 		~StaticEntity(void);
 
-		virtual void solveCollision(Entity*obj,Collision *col);
-		virtual void updateCollision(Collision *col);
-		virtual void callbackCollision(Collision *col){}
-		virtual void advance(Timer &timer){}
-		virtual void transform(Transform& trans){}
+		virtual void addForce(AppliedForce force);
+		virtual void addForceOnPoint(AppliedForce force,VecPos point);
+
+		virtual void setStep(Timer &timer) ;
+		virtual bool update();
+		virtual bool integrate();
 	};
 }

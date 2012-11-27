@@ -10,8 +10,8 @@ WinPaint::~WinPaint(void)
 }
 
 RECT WinPaint::getRect(AABB aabb){
-	VecPos begin = aabb.getBegin();
-	VecPos end = aabb.getEnd();
+	VecPos begin = aabb.begin;
+	VecPos end = aabb.end;
 	RECT rect;
 	rect.left = 100 * begin[0];
 	rect.top = 100 *begin[1];
@@ -31,11 +31,14 @@ void WinPaint::paint(HDC hdc){
 
 	hP=CreatePen(PS_SOLID,1,RGB(255,0,0));
 	SelectObject(hdc,hP);
+	DeleteObject(hB);
+	DeleteObject(hP);
 	for(unsigned i = 0; i < roles.size(); i++){
 		hB=CreateSolidBrush(RGB(i*37 % 255,i*111 % 255,i*153 % 255));
 		SelectObject(hdc,hB);
 		RECT rect = getRect(roles[i]->getAABB());
 		Rectangle(hdc,rect.left,rect.top,rect.right,rect.bottom);
+		DeleteObject(hB);
 	}
 	hP=CreatePen(PS_SOLID,1,RGB(0,0,255));
 	hB=CreateHatchBrush(HS_CROSS,RGB(0,255,0));//ÂÌÉ«Íø×´
@@ -46,4 +49,6 @@ void WinPaint::paint(HDC hdc){
 		RECT rect = getRect(houses[i]->getAABB());
 		Rectangle(hdc,rect.left,rect.top,rect.right,rect.bottom);
 	}
+	DeleteObject(hB);
+	DeleteObject(hP);
 }
